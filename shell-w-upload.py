@@ -59,9 +59,9 @@ def Connect(ip, port):
                 connected = True
                 break
 
-
-mysocket = socket.socket()
-Connect(args.ip, args.port)
+if args.ip:
+    mysocket = socket.socket()
+    Connect(args.ip, args.port)
 
 while True:
     try:
