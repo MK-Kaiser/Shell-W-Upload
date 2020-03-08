@@ -11,7 +11,7 @@ args = parser.parse_args()
 
 #prints version
 if args.version:
-    print("Shell w/ upload version 0.2")
+    print("pyShell version 0.2")
     exit()
 
 def upload(mysocket):
