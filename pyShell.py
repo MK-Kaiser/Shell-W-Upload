@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# Author: Mark Kaiser
+# Date: 08/25/2019
+# Description: A basic python shell with upload/download functionality.
+
 import socket, time, subprocess, codecs, argparse
 
 
