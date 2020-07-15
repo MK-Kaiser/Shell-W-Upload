@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Author: Mark Kaiser
+# Author: Mark Kaiser (c0braKai)
 # Date: 08/25/2019
 # Description: A basic python shell with upload/download functionality.
 
