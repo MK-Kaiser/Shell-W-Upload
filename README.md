@@ -7,6 +7,6 @@ Usage: on your local system run       nc -lvp <port number>
   
 Requirements: Remote system must have python3 installed, or pyshell.py must be compiled with pyinstaller.
 
-Recommendation: install rlwrap and prefix local receiver command with rlwrap for improved tab completion
+Recommendation: Install rlwrap and prefix local receiver command with rlwrap for improved tab completion
                 rlwrap nc -lvp <port number>
 
